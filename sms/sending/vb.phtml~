@@ -1,0 +1,302 @@
+<?php
+
+?>
+<h2>Send messages using VB.NET</h2>
+<p>
+The VB.NET code snippet below shows how to airtime using our API. 
+</p>
+
+<p>
+The code uses VB gateway class: <strong>AfricasTalkingGateway.vb</strong> <span class="download_link">[<a href='/smslibraries/vb'><i class="ti-download" ></i>  Download</a>]</span>
+</p>
+
+<p>
+ The code encodes and decodes data using Javascript serializer so you will need to add <strong>System.Web.Extensions</strong> to your referenced libraries
+</p>
+
+<ul>
+<li><a href="#basic" data-toggle="tab">Sending a message</a></li>
+<li><a href="#from" data-toggle="tab">Sending message using sender id or shortcode parameter</a></li>
+<li><a href="#enqueue" data-toggle="tab">Enqueue messages</a></li>
+<li><a href="#premium" data-toggle="tab">Sending premium rated (subscription) messages</a></li>
+<li><a href="#ondemand" data-toggle="tab">Sending premium rated (onDemand) messages</a></li>
+</ul>
+
+<div class="tab-content">
+
+<div class="tab-pane fade in active" id="basic">
+<h3>Sending a Message</h3>
+
+<fieldset style="width:98%" class='boxed code'>
+<pre class="vbCode">
+Imports System.IO
+Imports System.Collections
+Imports System.Collections.Generic
+
+Public Class Application
+	Public Shared Sub Main()
+		
+			' Specify your login credentials
+			
+			Dim username As String = "myAfricasTalkingUsername"
+			Dim apikey As String   = "myAPIKey"
+			
+			' Specify the numbers that you want to send to in a comma-separated list
+			' Please ensure you include the country code (+254 for Kenya in this case)
+			Dim recipients As String = "+254711XXXYYY,+254733YYYZZZ"
+			
+			' And of course we want our recipients to know what we really do
+			Dim message As String = "I'm a lumberjack and its ok, I sleep all night and I work all day"
+			
+			' Create a new instance of our awesome gateway class
+			Dim gateway As New AfricasTalkingGateway(username, apikey)
+			
+			' Any gateway error will be captured by our custom Exception class below,
+			' so wrap the call in a try-catch block
+			
+			
+			Try
+			 ' Hit send and we will handle the rest
+				Dim response as object() = gateway.sendMessage(recipients, message)
+				
+				Dim result as object
+				for each result in response
+					System.Console.WriteLine("Status: " + result("status"))
+					System.Console.WriteLine("MessageID: " + result("messageId"))
+					System.Console.WriteLine("phoneNumber: " + result("number"))
+					System.Console.WriteLine("Cost: " + result("cost"))
+				next
+		catch ex As AfricasTalkingGatewayException
+			System.Console.WriteLine(ex.Message())
+		End Try 
+	End Sub
+End Class
+
+</pre>	
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="from">
+<h3>Sending messages: Use short code/Sender id</h3>
+
+<fieldset style="width:98%" class='boxed code'>
+<pre class="vbCode">
+' Sending Messages using sender id/short code
+
+Imports System.IO
+Imports System.Collections
+Imports System.Collections.Generic
+
+Public Class Application
+	Public Shared Sub Main()
+			
+			Dim username As String = "myAfricasTalkingUsername"
+			Dim apikey As String   = "myAPIKey"
+			
+			Dim recipients As String = "+254711XXXYYY,+254733YYYZZZ"
+			
+			Dim message As String = "I'm a lumberjack and its ok, I sleep all night and I work all day"
+			
+			' Specify your AfricasTalking shortCode or sender id
+			Dim sender As String = "shortCode or senderId";
+			
+			Dim gateway As New AfricasTalkingGateway(username, apikey)
+			
+			Try
+			 ' Hit send and we will handle the rest
+				Dim response as object() = gateway.sendMessage(recipients, message, sender)
+				
+				Dim result as object
+				for each result in response
+					System.Console.WriteLine("Status: " + result("status"))
+					System.Console.WriteLine("MessageID: " + result("messageId"))
+					System.Console.WriteLine("phoneNumber: " + result("number"))
+					System.Console.WriteLine("Cost: " + result("cost"))
+				next
+		catch ex As AfricasTalkingGatewayException
+			System.Console.WriteLine(ex.Message())
+		End Try 
+	End Sub
+End Class
+
+</pre>
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="enqueue">
+<h3>Sending messages: Queue messages to be sent later</h3>
+
+<fieldset style="width:98%" class='boxed code'>
+<pre class="vbCode">
+' Message queueing
+
+Imports System.IO
+Imports System.Collections
+Imports System.Collections.Generic
+
+Public Class Application
+	Public Shared Sub Main()
+			
+			Dim username As String = "myAfricasTalkingUsername"
+			Dim apikey As String   = "myAPIKey"
+			
+			Dim recipients As String = "+254711XXXYYY,+254733YYYZZZ"
+			
+			Dim message As String = "I'm a lumberjack and its ok, I sleep all night and I work all day"
+			
+			Dim sender As String = Nothing 'Dim sender As String = "shortCode or senderId";
+			
+			Dim bulkSMSMode As Integer = 1 ' This should always be 1 for bulk messages
+			
+			' enqueue flag is used to queue messages incase you are sending a high volume.
+			' The default value is 0.
+			Dim options As New Hashtable()
+			options("enqueue") = 1;
+			
+			Dim gateway As New AfricasTalkingGateway(username, apikey)
+			
+			Try
+			
+				 Dim response as object() = gateway.sendMessage(recipients, message, sender, bulkSMSMode, options)
+				
+				Dim result as object
+				for each result in response
+					System.Console.WriteLine("Status: " + result("status"))
+					System.Console.WriteLine("MessageID: " + result("messageId"))
+					System.Console.WriteLine("phoneNumber: " + result("number"))
+					System.Console.WriteLine("Cost: " + result("cost"))
+				next
+		catch ex As AfricasTalkingGatewayException
+			System.Console.WriteLine(ex.Message())
+		End Try 
+	End Sub
+End Class
+
+</pre>
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="premium">
+<h3>Sending premium rated (subscription) messages</h3>
+<fieldset style="width:98%" class='boxed code'>
+<pre class="vbCode">
+' Sending premium rated messages
+
+Imports System.IO
+Imports System.Collections
+Imports System.Collections.Generic
+
+Public Class Application
+	Public Shared Sub Main()
+	 
+	 	Dim username As String = "myAfricasTalkingUsername"
+	 	Dim apikey As String   = "myAPIKey"
+	 
+	 	Dim recipients As String = "+254711XXXYYY,+254722YYYZZZ"
+	 
+	 	' Specify your premium shortCode and keyword
+	 	Dim shortCode As String = "XXXXX"
+	 	Dim keyword As String   = "premiumKeyword"
+	 
+	 	' Set the bulkSMSMode to 0 so that the subscriber gets charged
+	 	Dim bulkSMSMode As Integer = 0
+	 	
+	 	' Create a hashtable which would hold the following parameters:
+	 	' keyword: Your premium keyword,
+	 	' retryDurationInHours: The numbers of hours our API should retry to send the 
+	 	' incase it doesn't go through. It is optional
+	 	
+	 	Dim options As New Hashtable();
+	 	options("keyword")              = keyword
+	 	options("retryDurationInHours") = "No of hrs to retry eg. 6"
+	 	
+	 	' And of course we want our recipients to get our daily quote
+	 	Dim message As String = "No matter what, don't give up";
+	 	
+	 	Dim gateway As New AfricasTalkingGateway(username, apikey)
+			
+			
+			Try
+			
+				Dim response as object()= gateway.sendMessage(recipients, message, shortCode, bulkSMSMode, options)
+				
+				Dim result as object
+				for each result in response
+					System.Console.WriteLine("Status: " + result("status"))
+					System.Console.WriteLine("MessageID: " + result("messageId"))
+					System.Console.WriteLine("phoneNumber: " + result("number"))
+				next
+				
+		catch ex As AfricasTalkingGatewayException
+			System.Console.WriteLine(ex.Message())
+			
+		End Try 
+		
+	End Sub
+End Class
+
+</pre>
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="ondemand">
+<h3>Sending premium rated (onDemand) messages</h3>
+<fieldset style="width:98%" class='boxed code'>
+<pre class="vbCode">
+' Sending onDemand premium messages
+
+Imports System.IO
+Imports System.Collections
+Imports System.Collections.Generic
+
+Public Class Application
+	Public Shared Sub Main()
+	 
+	 	Dim username As String = "myAfricasTalkingUsername"
+	 	Dim apikey As String   = "myAPIKey"
+	 
+	 	Dim recipients As String = "+254711XXXYYY,+254722YYYZZZ"
+	 
+	 	Dim shortCode As String = "XXXXX"
+	 	Dim keyword As String   = "premiumKeyword" ' Dim keyword As String = Nothing
+	 
+	 	Dim bulkSMSMode As Integer = 0
+	 	
+	 	' Create a hashtable which would hold parameters keyword, retryDurationInHours and linkId
+	 	' linkId is received from the message sent by subscriber to your onDemand service
+	   Dim linkId As String = "messageLinkId";
+	 	
+	 	Dim options As New Hashtable();
+	 	options("keyword")              = keyword
+	 	options("linkId")               = linkId
+	 	options("retryDurationInHours") = "No of hrs to retry eg. 6"
+	 	
+	 	Dim message As String = "No matter what, don't give up";
+	 	
+	 	Dim gateway As New AfricasTalkingGateway(username, apikey)
+			
+			
+			Try
+			
+				Dim response as object()= gateway.sendMessage(recipients, message, shortCode, bulkSMSMode, options)
+				
+				Dim result as object
+				for each result in response
+					System.Console.WriteLine("Status: " + result("status"))
+					System.Console.WriteLine("MessageID: " + result("messageId"))
+					System.Console.WriteLine("phoneNumber: " + result("number"))
+				next
+				
+		catch ex As AfricasTalkingGatewayException
+			System.Console.WriteLine(ex.Message())
+			
+		End Try 
+		
+	End Sub
+End Class
+
+</pre>
+</fieldset>
+</div>
+
+</div>

@@ -1,0 +1,53 @@
+<?php
+
+?>
+<p>
+The PHP code snippet below shows how to add a number to a subscription service using our API. 
+</p>
+
+<p>
+The code uses our PHP gateway class: <strong>AfricasTalkingGateway.php</strong> <span class="download_link">[<a href='/smslibraries/php'><i class="ti-download" ></i>  Download</a>]</span>
+</p>
+
+<p>
+Also, please ensure that you have the php_curl module enabled. To enable it uncomment the line:
+<strong>;extension=php_curl.dll</strong> in php.ini and restart apache
+</p>
+
+<fieldset style="width:98%" class='boxed code'>
+<pre class="phpCode">
+&lt;?php
+
+	require_once "AfricasTalkingGateway.php";
+	
+		//Specify your credentials
+		$username = "myAfricasTalkingUsername";
+		$apiKey   = "myAfricasTalkingAPIKey";
+		
+	// Specify the number that you want to subscribe
+	// Please ensure you include the country code (+254 for Kenya in this case)
+	$phoneNumber   = "+254711YYYZZZ";
+	
+	//Specify your Africa's Talking short code and keyword
+	$shortCode = "ABCDE";
+	$keyword   = "myKeyword";
+		
+		//Create an instance of our awesome gateway class and pass your credentials
+		$gateway = new AfricasTalkingGateway($username, $apiKey);
+		
+		// Thats it, hit send and we'll take care of the rest. Any errors will
+   // be captured in the Exception class as shown below
+   
+   try {
+    $result = $gateway->createSubscription($phoneNumber, $shortCode, $keyword);
+    
+    //Only status Success signifies the subscription was successfully
+    echo $result->status;
+    echo $result->description;
+   }
+   catch(AfricasTalkingGatewayException $e){
+   	echo $e->getMessage();
+   }
+   
+</pre>	
+</fieldset>

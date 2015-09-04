@@ -1,0 +1,47 @@
+<?php
+
+?>
+
+<p>
+The PHP code snippet below shows how to get user balance from our API. 
+</p>
+
+<p>
+The code uses our PHP gateway class: <strong>AfricasTalkingGateway.php</strong> <span class="download_link">[<a href='/smslibraries/php'><i class="ti-download" ></i>  Download</a>]</span>
+</p>
+
+<p>
+Also, please ensure that you have the php_curl module enabled. To enable it uncomment the line:
+<strong>;extension=php_curl.dll</strong> in php.ini and restart apache
+</p>
+
+<fieldset style="width:98%" class='boxed code'>
+<pre class="phpCode">
+&lt;?php
+// Be sure to include the file you've just downloaded
+require_once('AfricasTalkingGateway.php');
+
+// Specify your login credentials
+$username   = "MyAfricasTalkingUsername";
+$apikey     = "MyAfricasTalkingApiKey";
+
+// Create a new instance of our awesome gateway class
+$gateway    = new AfricasTalkingGateway($username, $apikey);
+
+// Any gateway errors will be captured by our custom Exception class below, 
+// so wrap the call in a try-catch block
+try
+{ 
+  // Fetch the data from our USER resource and read the balance
+  $data = $gateway->getUserData();
+  echo "Balance: " . $data->balance."\n";
+}
+catch ( AfricasTalkingGatewayException $e )
+{
+  echo "Encountered an error while fetching user data: ".$e->getMessage()."\n";
+}
+
+// DONE!!! 
+
+</pre>
+</fieldset>

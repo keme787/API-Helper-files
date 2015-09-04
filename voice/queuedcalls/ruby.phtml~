@@ -1,0 +1,43 @@
+<?php
+
+?>
+
+<p>
+The Ruby code snippet below shows how you can get number of queued calls of your <em>Africas Talking</em> phone number using our API. 
+</p>
+
+<p>
+The code uses our Ruby and Rails gateway class: <strong>AfricasTalkingGateway.rb</strong> <span class="download_link">[<a href='/smslibraries/ruby'><i class="ti-download" ></i>  Download</a>]</span>
+</p>
+
+<fieldset style="width:98%;" class='boxed code'>
+<pre class="rubyCode">
+# Include the helper gateway class
+require './AfricasTalkingGateway'
+
+# Specify your login credentials
+username = "MyAfricasTalking_Username";
+apikey   = "MyAfricasTalking_APIKey";
+
+# Specify your AfricasTalking phone number in the international format(Comma separate them if many)
+phoneNumbers = "+254711082XYZ,+254205134YYY";
+
+# Create a new instance of our awesome gateway class
+gateway  = AfricasTalkingGateway.new(username, apikey)
+
+# Any gateway errors will be captured by our custom Exception class below,
+# so wrap the call in a try-catch block
+begin
+  results = gateway.getNumQueuedCalls(phoneNumbers)
+  results.each{|res|
+  	puts "Phone number: " + res.phoneNumber + "; Queue name: " + res.queueName + "; Number of queued calls: " + res.numCalls + "\n";
+  }
+
+rescue AfricasTalkingGatewayException => ex
+  puts 'Encountered an error: ' + ex.message
+end
+
+# DONE!
+
+</pre>	
+</fieldset>

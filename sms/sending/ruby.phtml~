@@ -1,0 +1,201 @@
+<?php
+
+?>
+<h2>Send messages using Ruby on Rails</h2>
+<p>
+The Ruby and Rails code snippet below shows how to send SMS Messages using our API. 
+</p>
+
+<p>
+The code uses our Ruby and Rails gateway class: <strong>AfricasTalkingGateway.rb</strong> <span class="download_link">[<a href='/smslibraries/ruby'><i class="ti-download" ></i>  Download</a>]</span>
+</p>
+
+
+<ul>
+<li><a href="#basic" data-toggle="tab">Sending a message</a></li>
+<li><a href="#from" data-toggle="tab">Sending message using sender id or shortcode parameter</a></li>
+<li><a href="#enqueue" data-toggle="tab">Enqueue messages</a></li>
+<li><a href="#premium" data-toggle="tab">Sending premium rated messages</a></li>
+</ul>
+
+<div class="tab-content">
+
+<div class="tab-pane fade in active" id="basic">
+<h3>Sending a Message</h3>
+<fieldset style="width:98%;" class='boxed code'>
+<pre class="rubyCode">
+# Include the helper gateway class
+require './AfricasTalkingGateway'
+
+# Specify your login credentials
+username = "MyAfricasTalkingUsername";
+apikey   = "MyAfricasTalkingAPIKey";
+
+# Specify the numbers that you want to send to in a comma-separated list
+# Please ensure you include the country code (+254 for Kenya in this case)
+to      = "+254711XXXYYY,+254733YYYZZZ";
+
+# And of course we want our recipients to know what we really do
+message = "I'm a lumberjack and it's ok, I sleep all night and I work all day"
+
+# Create a new instance of our awesome gateway class
+gateway = AfricasTalkingGateway.new(username, apikey)
+
+# Any gateway error will be captured by our custom Exception class below,
+# so wrap the call in a try-catch block
+begin
+  # Thats it, hit send and we'll take care of the rest.
+  reports = gateway.sendMessage(to, message)
+  
+  reports.each {|x|
+    # Note that only the Status "Success" means the message was sent
+    puts 'number=' + x.number + ';status=' + x.status + ';messageId=' + x.messageId + ';cost=' + x.cost
+  }
+rescue AfricasTalkingGatewayException => ex
+  puts 'Encountered an error: ' + ex.message
+end
+
+# DONE!
+
+</pre>	
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="from">
+<h3>Sending messages: Use short code/Sender id</h3>
+<fieldset style="width:98%;" class='boxed code'>
+<pre class="rubyCode">
+# Sending Messages using sender id/short code
+
+require './AfricasTalkingGateway'
+
+username = "MyAfricasTalkingUsername";
+apikey   = "MyAfricasTalkingAPIKey";
+
+to      = "+254711XXXYYY,+254733YYYZZZ";
+
+message = "I'm a lumberjack and it's ok, I sleep all night and I work all day"
+
+# Specify your AfricasTalking shortCode or sender id
+sender = "shortCode or senderId"
+
+gateway = AfricasTalkingGateway.new(username, apikey)
+
+begin
+  # Thats it, hit send and we'll take care of the rest.
+  reports = gateway.sendMessage(to, message, sender)
+  
+  reports.each {|x|
+    puts 'number=' + x.number + ';status=' + x.status + ';messageId=' + x.messageId + ';cost=' + x.cost
+  }
+rescue AfricasTalkingGatewayException => ex
+  puts 'Encountered an error: ' + ex.message
+end
+
+# DONE!
+
+</pre>	
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="enqueue">
+<h3>Sending messages: Queue messages to be sent later</h3>
+<fieldset style="width:98%;" class='boxed code'>
+<pre class="rubyCode">
+# Sending Messages using sender id/short code
+
+require './AfricasTalkingGateway'
+
+username = "MyAfricasTalkingUsername";
+apikey   = "MyAfricasTalkingAPIKey";
+
+to      = "+254711XXXYYY,+254733YYYZZZ";
+
+message = "I'm a lumberjack and it's ok, I sleep all night and I work all day"
+
+sender = nil # sender = "shortCode or sender id"
+
+bulkSMSMode = 1    # This should always be 1 for bulk messages
+
+# enqueue flag is used to queue messages incase you are sending a high volume.
+# The default value is 0.
+enqueue = 1
+
+gateway = AfricasTalkingGateway.new(username, apikey)
+
+begin
+
+  reports = gateway.sendMessage(to, message, sender, bulkSMSMode, enqueue)
+  
+  reports.each {|x|
+    puts 'number=' + x.number + ';status=' + x.status + ';messageId=' + x.messageId + ';cost=' + x.cost
+  }
+rescue AfricasTalkingGatewayException => ex
+  puts 'Encountered an error: ' + ex.message
+end
+
+# DONE!
+
+</pre>	
+</fieldset>
+</div>
+
+<div class="tab-pane fade" id="premium">
+<h3>Sending premium rated messages</h3>
+<fieldset style="width:98%" class='boxed code'>
+<pre class="rubyCode">
+# Sending premium rated messages
+
+require './AfricasTalkingGateway'
+
+# Specify your login credentials
+username = "MyAfricasTalkingUsername"
+apikey   = "MyAfricasTalkingAPIKey"
+
+to      = "+254711XXXYYY,+254722YYYZZZ"
+
+# Specify your premium shortCode and keyword
+# Set keyword as None where not used (Mostly for onDemand services)
+
+shortCode = "XXXXX"
+keyword   = "premiumKeyword" # keyword = nil
+
+# Set the bulkSMSMode flag to 0 so that the subscriber gets charged
+bulkSMSMode = 0
+
+# Set the enqueue flag to 0 so that your message will not be queued or to 1 for many messages
+enqueue    = 0
+
+# Incase of an onDemand service, specify the link id. else set it to nil
+# linkId is received from the message sent by subscriber to your onDemand service
+
+linkId     = "messageLinkId" # linkId = nil
+
+# Specify retryDurationInHours: The numbers of hours our API should retry to send the message
+# incase it doesn't go through. It is optional
+retryDurationInHours = "No of hours to retry";
+
+# And of course we want our recipients to get our daily quote
+message = "No matter what, don't give up";
+
+# Create a new instance of our awesome gateway class
+gateway = AfricasTalkingGateway.new(username, apikey)
+
+# Any gateway error will be captured by our custom Exception class below,
+# so wrap the call in a try-catch block
+begin
+  # Thats it, hit send and we'll take care of the rest.
+  reports = gateway.sendMessage(to, message, shortCode, bulkSMSMode, enqueue, keyword, linkId, retryDurationInHours)
+  reports.each {|x|
+    # Note that only the Status "Success" means the message was sent
+    puts 'number=' + x.number + ';status=' + x.status + ';messageId=' + x.messageId
+  }
+rescue AfricasTalkingGatewayException => ex
+  puts 'Encountered an error: ' + ex.message
+end
+
+</pre>	
+</fieldset>
+</div>
+
+</div>
